@@ -6,12 +6,13 @@ import lvm_read as lvm
 filename = 'teste.txt'
 df = pd.read_csv(filename, sep = '\t') # data frame com dados do acelerômetro
 
-
+# Determina a frquência de aquisição
 df2 = df.copy()
 df2.drop(df2[(df2['t'] < 5.5) ].index,inplace = True)
 df2.drop(df2[(df2['t'] > 6.5) ].index,inplace = True)
 F = len(df2)   # frquência de aquisição
 
+# Delimita o intervalo de da excitação
 df.drop(df[(df['t'] < 5.5) ].index,inplace = True)
 df.drop(df[(df['t'] > 5.54) ].index,inplace = True)
 df['t'] = df['t'] - df['t'].min()
@@ -20,13 +21,18 @@ fstep = F/N # step frquencia
 f = np.linspace(0, (N-1)*fstep, N) # vetor frequência
 f_plot = f[0:int(N/2+1)]
 
-t = df['t']
-Y = df['a']
-Y_freq = np.fft.fft(Y) # amostra no domínio da frquencia
+t = df['t'] #Tempo
+Y = df['a'] #aceleração
+
+Y_freq = np.fft.fft(Y) # FFT
+
 Y_freq_mag = abs(Y_freq)/N
 Y_freq_mag_plot = 2 * Y_freq_mag[0:int(N/2+1)]
 Y_freq_mag_plot[0] = Y_freq_mag_plot[0]/2
-df_f = pd.DataFrame(np.array([f_plot,Y_freq_mag_plot]).T,columns = ['f','Y']) #dataframe com dados de frequência
+#dataframe com dados de frequência
+df_f = pd.DataFrame(np.array([f_plot,Y_freq_mag_plot]).T,columns = ['f','Y'])
+
+#frquência natural
 fn = df_f['Y'].max()
 
 M = 200 # massa kg
